@@ -4,6 +4,5 @@ module.exports = buildModule("TokenModule", (m) => {
 
   const token = m.contract("Token", [], {});
    
-
   return { token };
 });
