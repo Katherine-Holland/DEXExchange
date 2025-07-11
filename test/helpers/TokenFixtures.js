@@ -1,3 +1,5 @@
+const { ethers } = require("hardhat")
+
 async function deployTokenFixture(){
     const Token = await ethers.getContractFactory("Token")
     const token = await Token.deploy("Dapp University", "DAPP", "1000000")
@@ -6,10 +8,27 @@ async function deployTokenFixture(){
     const deployer = accounts[0]
     const receiver = accounts[1]
     const exchange = accounts[2]
+    
     return { token, deployer, receiver, exchange }
 
 }
 
+async function transferFromTokenFixture() {
+    const { token, deployer, receiver, exchange } = await deployTokenFixture()
+
+    const AMOUNT = ethers.parseUnits("100", 18)
+
+    await (await token.connect(deployer).approve(exchange.address, AMOUNT)).wait()
+    
+    const transaction = await token.connect(exchange).transferFrom(deployer.address, receiver.address, AMOUNT)
+    await transaction.wait()
+
+    return { token, deployer, receiver, exchange, transaction }
+}
+
+
+
 module.exports = {
-    deployTokenFixture
+    deployTokenFixture,
+    transferFromTokenFixture
 }
